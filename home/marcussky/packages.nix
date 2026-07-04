@@ -128,6 +128,9 @@ in
     fastfetch # System info
     lsof # Open file inspector
     strace # Syscall tracer
+    libva-utils # VAAPI diagnostics
+    intel-gpu-tools # Intel GPU diagnostics
+    lm_sensors # Sensor monitoring
 
     # Networking
     openssh # SSH client
