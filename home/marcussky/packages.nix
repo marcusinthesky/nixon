@@ -95,6 +95,7 @@ in
     neovim # Terminal editor
     zed-editor # Zed editor
     obsidian # Markdown note-taking
+    # pkgs-unstable.mistral-vibe  # broken upstream (test failures in 2.18.x), use: uvx --from mistral-vibe vibe
     pkgs-unstable.code-cursor # Cursor AI editor
     pkgs-unstable.antigravity # Antigravity agentic IDE
     pkgs-unstable.opencode # Terminal AI coding agent
