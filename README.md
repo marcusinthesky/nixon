@@ -1,6 +1,6 @@
-# nixify
+# nixon
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmarcusinthesky%2Fnixify.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmarcusinthesky%2Fnixify?ref=badge_shield)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmarcusinthesky%2Fnixon.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmarcusinthesky%2Fnixon?ref=badge_shield)
 
 ![cover](cover.webp)
 
@@ -9,7 +9,7 @@ Declarative NixOS workstation configuration managed with [Nix Flakes](https://wi
 ## Structure
 
 ```
-nixify/
+nixon/
 ├── flake.nix                          # Entrypoint: inputs + nixosConfigurations
 ├── justfile                           # Common tasks (just switch, just update, etc.)
 ├── hosts/
@@ -48,8 +48,8 @@ nixify/
 
 ```bash
 # Clone the repo
-git clone <your-repo-url> ~/Git/nixify
-cd ~/Git/nixify
+git clone <your-repo-url> ~/Git/nixon
+cd ~/Git/nixon
 
 # Build and switch (replaces /etc/nixos/configuration.nix)
 sudo nixos-rebuild switch --flake .#nixos
