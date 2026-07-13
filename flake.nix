@@ -63,6 +63,7 @@
 
           # ── Shared NixOS modules ───────────────────────────────────
           ./modules/nixos/nix-settings.nix
+          ./modules/nixos/hardware-tuning.nix
           ./modules/nixos/desktop.nix
           ./modules/nixos/networking.nix
           ./modules/nixos/docker.nix

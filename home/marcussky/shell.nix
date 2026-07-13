@@ -21,6 +21,8 @@ _:
       gd = "git diff";
       gp = "git push";
       gl = "git pull";
+      dirac = "bunx --package dirac-cli dirac"; # `https://github.com/dirac-run/dirac` coding agent cli
+      vibe = "uvx --from mistral-vibe vibe"; # `https://mistral.ai/news/leanstral-1-5/#get-started` Mistral Vibe AI coding agent
     };
 
     sessionVariables = {

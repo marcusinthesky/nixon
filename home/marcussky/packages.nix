@@ -19,6 +19,10 @@ let
 in
 {
   home.packages = with pkgs; [
+    # Cloud SDK & Registries
+    google-cloud-sdk # gcloud cli
+    dvc-with-remotes # DVC with remote storage support
+
     # Kubernetes
     kubectl # K8s CLI
     minikube # Local K8s cluster
@@ -91,6 +95,7 @@ in
     neovim # Terminal editor
     zed-editor # Zed editor
     obsidian # Markdown note-taking
+    # pkgs-unstable.mistral-vibe  # broken upstream (test failures in 2.18.x), use: uvx --from mistral-vibe vibe
     pkgs-unstable.code-cursor # Cursor AI editor
     pkgs-unstable.antigravity # Antigravity agentic IDE
     pkgs-unstable.opencode # Terminal AI coding agent
@@ -124,6 +129,9 @@ in
     fastfetch # System info
     lsof # Open file inspector
     strace # Syscall tracer
+    libva-utils # VAAPI diagnostics
+    intel-gpu-tools # Intel GPU diagnostics
+    lm_sensors # Sensor monitoring
 
     # Networking
     openssh # SSH client

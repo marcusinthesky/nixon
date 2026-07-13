@@ -2,7 +2,10 @@
 _:
 
 {
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    wifi.powersave = false;
+  };
 
   # ── SSH (hardened — key-only, no root login) ───────────────────────
   services.openssh = {
