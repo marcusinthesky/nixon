@@ -1,20 +1,11 @@
-# GNOME Desktop Environment — GDM, Wayland, printing, audio
+# COSMIC Desktop Environment — COSMIC greeter, Wayland, printing, audio
 _:
 
 {
   services = {
     # ── Display & Desktop ──────────────────────────────────────────────
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
-    gnome.games.enable = false;
-
-    xserver = {
-      enable = true;
-      xkb = {
-        layout = "za";
-        variant = "";
-      };
-    };
+    displayManager.cosmic-greeter.enable = true;
+    desktopManager.cosmic.enable = true;
 
     # ── Firmware updates ───────────────────────────────────────────────
     fwupd.enable = true;
@@ -31,9 +22,6 @@ _:
       pulse.enable = true;
     };
   };
-
-  # Qt — use Adwaita theming under GNOME (the old 'gnome' value is deprecated)
-  qt.platformTheme.name = "adwaita";
 
   # RealtimeKit — lets PipeWire acquire realtime scheduling
   security.rtkit.enable = true;

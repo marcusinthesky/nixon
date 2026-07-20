@@ -14,6 +14,14 @@ _:
       la = "eza -a --icons";
       lt = "eza --tree --icons --level=2";
       cat = "bat";
+      cd = "zoxide";
+      du = "dust";
+      ps = "procs";
+      top = "btm";
+      sed = "sd";
+      ping = "gping";
+      tar = "ouch";
+      mux = "zellij";
       k = "kubectl";
       kns = "kubectl config set-context --current --namespace";
       dc = "docker compose";

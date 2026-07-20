@@ -24,13 +24,40 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # COSMIC desktop and declarative COSMIC user configuration.
+    nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
+
+    cosmic-manager = {
+      url = "github:HeitorAugustoLN/cosmic-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
+    # Project-local toolchain integrations. These remain available for real
+    # manifests under tools/ and are kept in the root lockfile.
+    uv2nix = {
+      url = "github:pyproject-nix/uv2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pyproject-nix.inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    cargo2nix = {
+      url = "github:cargo2nix/cargo2nix/release-0.12";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    bun2nix = {
+      url = "github:nix-community/bun2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Bleeding-edge channel — used selectively (e.g. VS Code)
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    zed-extensions.url = "github:DuskSystems/nix-zed-extensions";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, git-hooks, vulnix, stylix, zed-extensions, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, git-hooks, vulnix, stylix, nixos-cosmic, cosmic-manager, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -38,6 +65,7 @@
         inherit system;
         config.allowUnfree = true;
       };
+      toolPackages = import ./nix/tools.nix { inherit pkgs; };
     in
     {
       # ════════════════════════════════════════════════════════════════
@@ -55,11 +83,19 @@
         };
 
         modules = [
-          # ── Zed extensions overlay ────────────────────────────────────
-          { nixpkgs.overlays = [ zed-extensions.overlays.default ]; }
-
           # ── Host-specific (boot, LUKS, hardware) ───────────────────
           ./hosts/nixos
+
+          # ── COSMIC desktop ────────────────────────────────────────
+          nixos-cosmic.nixosModules.default
+          {
+            nix.settings = {
+              substituters = [ "https://cosmic.cachix.org/" ];
+              trusted-public-keys = [
+                "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
+              ];
+            };
+          }
 
           # ── Shared NixOS modules ───────────────────────────────────
           ./modules/nixos/nix-settings.nix
@@ -81,11 +117,11 @@
               useUserPackages = true;
               backupFileExtension = "hm-backup";
               sharedModules = [
-                zed-extensions.homeManagerModules.default
+                cosmic-manager.homeManagerModules.cosmic-manager
               ];
               extraSpecialArgs = {
                 userName = "marcussky";
-                inherit pkgs-unstable;
+                inherit pkgs-unstable toolPackages;
               };
               users.marcussky = import ./home/marcussky;
             };

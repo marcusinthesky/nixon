@@ -65,8 +65,8 @@ in
     inherit (theme) opacity;
 
     # ── Qt ─────────────────────────────────────────────────────────────
-    # Disable Stylix Qt target — GNOME uses Adwaita for Qt theming natively.
-    # Stylix only supports 'qtct' which is irrelevant under GNOME.
+    # COSMIC uses its own Iced/RON theme and settings system; keep Stylix's
+    # Qt target disabled and let cosmic-manager handle COSMIC user state.
     targets.qt.enable = false;
   };
 }

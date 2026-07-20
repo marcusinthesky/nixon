@@ -15,8 +15,8 @@ _:
     ./direnv.nix
     ./btop.nix
     ./vscode.nix
-    ./packages.nix
-    ./gnome.nix
+    ./packages
+    ./cosmic.nix
     ./zed.nix
   ];
 
