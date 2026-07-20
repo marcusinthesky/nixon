@@ -11,8 +11,8 @@ in
     obsidian
 
     # pkgs-unstable.mistral-vibe is broken upstream; use `vibe` from shell.nix.
-    pkgs-unstable.code-cursor
-    pkgs-unstable.antigravity
+    # pkgs-unstable.code-cursor
+    # pkgs-unstable.antigravity
     pkgs-unstable.opencode
     pkgs-unstable.claude-code
     pkgs-unstable.codex

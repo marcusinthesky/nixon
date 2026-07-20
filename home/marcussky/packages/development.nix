@@ -41,7 +41,9 @@
     # Typst, Markdown, Quarto, and LaTeX
     typst
     tinymist
-    quarto
+    # Quarto pulls a large R/SDL runtime. Enable it deliberately when needed
+    # for publishing projects; Typst/Tectonic remain available by default.
+    # quarto
     marksman
     tectonic
 

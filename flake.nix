@@ -24,9 +24,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # COSMIC desktop and declarative COSMIC user configuration.
-    nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
-
     cosmic-manager = {
       url = "github:HeitorAugustoLN/cosmic-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,7 +54,7 @@
 
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, git-hooks, vulnix, stylix, nixos-cosmic, cosmic-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, git-hooks, vulnix, stylix, cosmic-manager, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -87,16 +84,6 @@
           ./hosts/nixos
 
           # ── COSMIC desktop ────────────────────────────────────────
-          nixos-cosmic.nixosModules.default
-          {
-            nix.settings = {
-              substituters = [ "https://cosmic.cachix.org/" ];
-              trusted-public-keys = [
-                "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
-              ];
-            };
-          }
-
           # ── Shared NixOS modules ───────────────────────────────────
           ./modules/nixos/nix-settings.nix
           ./modules/nixos/hardware-tuning.nix
