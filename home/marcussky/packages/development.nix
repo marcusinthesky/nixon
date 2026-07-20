@@ -37,6 +37,10 @@
     statix
     deadnix
     nixd
+    prek
+    convco
+    rumdl
+    codespell
 
     # Typst, Markdown, Quarto, and LaTeX
     typst
@@ -47,9 +51,11 @@
     marksman
     tectonic
 
-    # Task running and native builds
+    # Task runner
     just
     just-lsp
+
+    # Native build
     git-cliff
     gnumake
     gcc

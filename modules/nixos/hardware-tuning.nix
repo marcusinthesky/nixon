@@ -55,8 +55,8 @@
   services = {
     thermald.enable = true;
 
-    # power-profiles-daemon owns the cpufreq governor; let GNOME pick
-    # `performance` on AC and `power-saver` on battery.
+    # power-profiles-daemon owns the cpufreq governor and exposes
+    # `performance` on AC and `power-saver` on battery to the desktop.
     power-profiles-daemon.enable = true;
 
     # NVMe scheduler = `none` — the device has its own queue depth;

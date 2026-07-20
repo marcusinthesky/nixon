@@ -23,6 +23,7 @@
     watchexec
     jq
     yq
+    duckdb
     zellij
 
     # System and networking basics
@@ -45,7 +46,9 @@
     # ImageMagick is used by the configuration for Stylix wallpaper generation.
     imagemagick
 
-    # Browsers
+    # Browsers and GUI desktop utilities
     google-chrome
+    cosmic-edit
+    mission-center
   ]) ++ toolPackages;
 }

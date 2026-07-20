@@ -1,16 +1,11 @@
 {
-  description = "nixify — declarative NixOS workstation configuration";
+  description = "nixon — declarative NixOS workstation configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    git-hooks = {
-      url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -54,7 +49,7 @@
 
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, git-hooks, vulnix, stylix, cosmic-manager, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, vulnix, stylix, cosmic-manager, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -117,54 +112,56 @@
       };
 
       # ════════════════════════════════════════════════════════════════
-      # Quality gates — pre-commit hooks (Nix-managed, self-contained)
+      # Quality gates — standalone prek (Rust pre-commit replacement)
       # ════════════════════════════════════════════════════════════════
-      # All tooling is pinned via the flake lock — no system installs
-      # needed. Hooks install automatically when entering `nix develop`.
-      # Run manually: nix develop -c pre-commit run --all-files
-      # Run in CI:    nix flake check (sandboxed, read-only)
-      checks.${system} = {
-        pre-commit-check = git-hooks.lib.${system}.run {
-          src = ./.;
-          hooks = {
-            # ── Nix formatting ─────────────────────────────────────────
-            nixpkgs-fmt.enable = true;
-
-            # ── Nix linting ────────────────────────────────────────────
-            statix.enable = true;
-
-            # ── Nix dead code detection ────────────────────────────────
-            deadnix.enable = true;
-
-            # ── General hygiene ────────────────────────────────────────
-            check-merge-conflicts.enable = true;
-            check-added-large-files.enable = true;
-            detect-private-keys.enable = true;
-            end-of-file-fixer.enable = true;
-            trim-trailing-whitespace.enable = true;
-
-            # ── Commit messages ────────────────────────────────────────
-            # Enforce conventional commits (feat:, fix:, chore:, etc.)
-            convco.enable = true;
-          };
-        };
-      };
+      # Run manually: `prek run --all-files`
+      # Install Git hooks: `prek install`
+      checks.${system}.prek = pkgs.runCommand "nixon-prek-check"
+        {
+          nativeBuildInputs = [
+            pkgs.prek
+            pkgs.nixpkgs-fmt
+            pkgs.statix
+            pkgs.deadnix
+            pkgs.convco
+            pkgs.git
+            pkgs.rumdl
+            pkgs.codespell
+            pkgs.tombi
+            pkgs.just
+            pkgs.just-lsp
+          ];
+        } ''
+        cp -R ${./.} source
+        chmod -R u+w source
+        export XDG_CACHE_HOME="$TMPDIR/prek-cache"
+        mkdir -p "$XDG_CACHE_HOME"
+        cd source
+        git init -q
+        git config user.email "nixon@localhost"
+        git config user.name "nixon"
+        git add -A
+        prek run --all-files
+        touch $out
+      '';
 
       # ════════════════════════════════════════════════════════════════
       # Development shell — hooks auto-install on entry
       # ════════════════════════════════════════════════════════════════
       devShells.${system}.default =
-        let
-          inherit (self.checks.${system}.pre-commit-check) shellHook enabledPackages;
-        in
         pkgs.mkShell {
-          name = "nixify-dev";
-          inherit shellHook;
-          buildInputs = enabledPackages ++ [
+          name = "nixon-dev";
+          buildInputs = [
+            pkgs.prek
             pkgs.just
             pkgs.nixpkgs-fmt
             pkgs.statix
             pkgs.deadnix
+            pkgs.convco
+            pkgs.rumdl
+            pkgs.codespell
+            pkgs.tombi
+            pkgs.just-lsp
             vulnix.packages.${system}.default
           ];
         };

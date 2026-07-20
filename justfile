@@ -1,4 +1,4 @@
-# nixify — common tasks
+# nixon — common tasks
 #
 # Usage: just <recipe>
 # Requires: https://github.com/casey/just
@@ -14,7 +14,7 @@ default:
 
 # Build and switch to the new configuration
 switch:
-    sudo nixos-rebuild switch --flake .#nixos --use-substitutes --no-write-lock-file --option extra-substituters '{{cosmic_substituter}}' --option extra-trusted-public-keys '{{cosmic_public_key}}'
+    sudo nixos-rebuild switch --flake .#nixos --use-substitutes --no-write-lock-file --option extra-substituters '{{ cosmic_substituter }}' --option extra-trusted-public-keys '{{ cosmic_public_key }}'
 
 # Build without switching (dry run)
 build:
@@ -26,9 +26,13 @@ test:
 
 # ── Quality Gates ──────────────────────────────────────────────────────
 
-# Run ALL pre-commit hooks on every file
+# Run all prek hooks on every file
 lint:
-    nix develop -c pre-commit run --all-files
+    nix develop -c prek run --all-files
+
+# Install prek's Git hooks for this repository
+install-hooks:
+    nix develop -c prek install
 
 # Format all Nix files
 fmt:
@@ -46,7 +50,7 @@ deadnix:
 vulnix:
     nix develop -c vulnix --system
 
-# Run nix flake check (sandboxed — used in CI)
+# Run Nix evaluation and the prek quality check
 check:
     nix flake check
 
@@ -58,7 +62,7 @@ update:
 
 # Update a single input
 update-input input:
-    nix flake lock --update-input {{input}}
+    nix flake lock --update-input {{ input }}
 
 # Update every input, including unstable and project-local tool integrations.
 update-all:

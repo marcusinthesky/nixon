@@ -13,7 +13,6 @@ _:
     ./git.nix
     ./shell.nix
     ./direnv.nix
-    ./btop.nix
     ./vscode.nix
     ./packages
     ./cosmic.nix

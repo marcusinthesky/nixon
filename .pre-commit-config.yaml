@@ -1,0 +1,73 @@
+default_stages: [pre-commit]
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+  - pre-push
+
+repos:
+  - repo: builtin
+    hooks:
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: nixpkgs-fmt
+        name: nixpkgs-fmt
+        entry: nixpkgs-fmt
+        language: system
+        files: \.nix$
+      - id: statix
+        name: statix
+        entry: statix check --format errfmt
+        language: system
+        files: \.nix$
+        pass_filenames: false
+      - id: deadnix
+        name: deadnix
+        entry: deadnix --fail
+        language: system
+        files: \.nix$
+      - id: tombi
+        name: tombi (TOML lint)
+        entry: tombi lint
+        language: system
+        files: \.toml$
+      - id: rumdl
+        name: rumdl (Markdown lint)
+        entry: rumdl check
+        language: system
+        files: \.md$
+      - id: rumdl-fmt
+        name: rumdl (Markdown format)
+        entry: rumdl fmt
+        language: system
+        files: \.md$
+      - id: codespell
+        name: codespell
+        entry: codespell
+        language: system
+        exclude: \.log$|NOTE\.md$
+      - id: just-fmt
+        name: just fmt (Justfile format)
+        entry: just --fmt --check --unstable
+        language: system
+        files: (^|/)justfile$
+        pass_filenames: false
+      - id: just-lsp-analyze
+        name: just-lsp analyze (Justfile lint)
+        entry: bash -c 'for f in "$@"; do just-lsp analyze "$f"; done' --
+        language: system
+        files: (^|/)justfile$
+        pass_filenames: true
+      - id: convco
+        name: convco
+        entry: sh tools/convco-hook.sh
+        language: system
+        stages: [commit-msg]
