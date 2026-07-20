@@ -48,7 +48,9 @@
 
     # Browsers and GUI desktop utilities
     google-chrome
+    cosmic-files
     cosmic-edit
+    cosmic-settings
     mission-center
   ]) ++ toolPackages;
 }

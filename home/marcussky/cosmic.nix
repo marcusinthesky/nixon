@@ -68,7 +68,9 @@
       "com.mitchellh.ghostty"
       "google-chrome"
       "dev.zed.Zed"
+      "com.system76.CosmicFiles"
       "com.system76.CosmicEdit"
+      "com.system76.CosmicSettings"
       "io.missioncenter.MissionCenter"
     ];
 

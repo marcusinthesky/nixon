@@ -5,6 +5,11 @@
 _:
 
 {
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   programs.zsh = {
     enable = true;
 
@@ -14,7 +19,6 @@ _:
       la = "eza -a --icons";
       lt = "eza --tree --icons --level=2";
       cat = "bat";
-      cd = "zoxide";
       du = "dust";
       ps = "procs";
       top = "btm";
