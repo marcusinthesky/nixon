@@ -84,6 +84,7 @@
           ./modules/nixos/hardware-tuning.nix
           ./modules/nixos/desktop.nix
           ./modules/nixos/networking.nix
+          ./modules/nixos/security.nix
           ./modules/nixos/docker.nix
           ./modules/nixos/shell.nix
           ./modules/nixos/stylix.nix

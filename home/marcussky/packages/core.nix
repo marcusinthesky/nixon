@@ -48,9 +48,16 @@
 
     # Browsers and GUI desktop utilities
     google-chrome
+    morewaita-icon-theme
     cosmic-files
     cosmic-edit
     cosmic-settings
     mission-center
+
+    # Media
+    vlc
+
+    # Torrenting
+    rqbit
   ]) ++ toolPackages;
 }

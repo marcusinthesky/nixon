@@ -5,6 +5,10 @@
 _:
 
 {
+  # claude-code self-updates outside Nix into ~/.local/share/claude/versions,
+  # symlinked from ~/.local/bin/claude; keep it ahead of the Nix-packaged binary.
+  home.sessionPath = [ "$HOME/.local/bin" ];
+
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
