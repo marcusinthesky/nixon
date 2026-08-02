@@ -2,7 +2,7 @@
 { pkgs, pkgs-unstable, ... }:
 
 let
-  superset-desktop = import ../../../nix/packages/superset-desktop.nix { inherit pkgs; };
+  herdr = import ../../../nix/packages/herdr.nix { inherit pkgs; };
 in
 {
   home.packages = with pkgs; [
@@ -17,6 +17,6 @@ in
     pkgs-unstable.claude-code
     pkgs-unstable.codex
     pkgs-unstable.pi-coding-agent
-    superset-desktop
+    herdr
   ];
 }

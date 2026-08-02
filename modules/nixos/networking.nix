@@ -24,6 +24,7 @@ _:
     enable = true;
     allowedTCPPorts = [
       22 # SSH
+      8010 # VLC → Chromecast local media streaming
     ];
   };
 }

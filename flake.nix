@@ -44,7 +44,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Bleeding-edge channel — used selectively (e.g. VS Code)
+    # Bleeding-edge channel — used selectively (COSMIC, VS Code, agent CLIs)
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   };
@@ -72,6 +72,7 @@
         specialArgs = {
           userName = "marcussky";
           userDescription = "Marcus Gawronsky";
+          inherit pkgs-unstable;
         };
 
         modules = [
@@ -79,6 +80,8 @@
           ./hosts/nixos
 
           # ── COSMIC desktop ────────────────────────────────────────
+          ./modules/nixos/cosmic-unstable.nix
+
           # ── Shared NixOS modules ───────────────────────────────────
           ./modules/nixos/nix-settings.nix
           ./modules/nixos/hardware-tuning.nix

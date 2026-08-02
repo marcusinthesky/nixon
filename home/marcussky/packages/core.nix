@@ -5,6 +5,7 @@
   home.packages = (with pkgs; [
     # Text, file, and shell tools
     ripgrep
+    ast-grep
     fd
     bat
     eza

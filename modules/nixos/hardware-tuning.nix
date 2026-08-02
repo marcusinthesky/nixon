@@ -35,6 +35,15 @@
 
     loader.systemd-boot.configurationLimit = 10;
 
+    # /tmp lives on the root filesystem, so nothing reclaims it on its own.
+    # Agent and build scratch (uv, prek, matplotlib, nix-shell) accumulates
+    # there indefinitely — it had reached 18 GB before this was set.
+    #
+    # NOT useTmpfs: that backs /tmp with RAM, and single builds here have
+    # written multi-GB caches to it. On 16 GB that trades a disk problem
+    # for an OOM.
+    tmp.cleanOnBoot = true;
+
     # Only swap to disk under real pressure — zram absorbs the rest.
     kernel.sysctl = {
       "vm.swappiness" = 10;
