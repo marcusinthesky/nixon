@@ -22,13 +22,25 @@ _:
       ];
 
       # ── Download parallelism ─────────────────────────────────────────
-      http-connections = 50; # max parallel HTTP connections (default: 25)
-      max-substitution-jobs = 32; # max concurrent nar fetches  (default: 16)
+      # Keep concurrent nar downloads from turning this SSD's limited
+      # sustained-write throughput into an I/O latency spike.
+      http-connections = 16;
+      max-substitution-jobs = 4;
+
+      # Bound local CPU and I/O pressure to the laptop's eight hardware
+      # threads while retaining enough headroom for an interactive desktop.
+      max-jobs = 4;
+      cores = 2;
+
+      # If the store drives root below 10 GiB free, collect unreachable paths
+      # until 20 GiB is available. Live profiles and generations remain roots.
+      min-free = 10 * 1024 * 1024 * 1024;
+      max-free = 20 * 1024 * 1024 * 1024;
     };
 
     gc = {
       automatic = true;
-      dates = "weekly";
+      dates = "Sun 03:00";
       options = "--delete-older-than 14d";
     };
   };

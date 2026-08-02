@@ -7,7 +7,8 @@
     package = pkgs.docker_29;
     autoPrune = {
       enable = true;
-      dates = "weekly";
+      # Keep this away from Sunday Nix GC and Monday's weekly fstrim.
+      dates = "Wed 03:00";
     };
   };
 }

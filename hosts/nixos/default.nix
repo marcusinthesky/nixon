@@ -33,9 +33,9 @@
     initrd.luks.devices = {
       "luks-dcda9499-a7ef-4a11-b1c3-762e6a7ce582".allowDiscards = true;
 
+      # Swap has no discard option, so keep its allocation pattern private.
       "luks-60a07f23-65d2-4af8-b2ae-95378e57301d" = {
         device = "/dev/disk/by-uuid/60a07f23-65d2-4af8-b2ae-95378e57301d";
-        allowDiscards = true;
       };
     };
   };

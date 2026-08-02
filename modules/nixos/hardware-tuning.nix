@@ -44,9 +44,10 @@
     # for an OOM.
     tmp.cleanOnBoot = true;
 
-    # Only swap to disk under real pressure — zram absorbs the rest.
+    # Treat compressed zram as a normal reclaim target. Its higher swap
+    # priority keeps the encrypted NVMe swap as a last-resort fallback.
     kernel.sysctl = {
-      "vm.swappiness" = 10;
+      "vm.swappiness" = 100;
       "vm.vfs_cache_pressure" = 50;
       "vm.dirty_ratio" = 10;
       "vm.dirty_background_ratio" = 5;
