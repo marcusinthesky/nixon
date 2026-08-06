@@ -1,0 +1,4 @@
+# Markdown lint configuration for the NixOS workstation repository.
+[global]
+exclude = ["**/.git/**", "**/result/**", "**/*.log"]
+disable = ["MD013", "MD041"]

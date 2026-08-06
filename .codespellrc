@@ -1,0 +1,4 @@
+[codespell]
+quiet-level = 2
+skip = *.lock,.git,result,result-*,*.log
+ignore-words-list = nix,prek,cosmic,stylix,deadnix,statix,nixpkgs,duckdb,ghostty

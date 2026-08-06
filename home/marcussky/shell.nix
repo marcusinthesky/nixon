@@ -5,15 +5,26 @@
 _:
 
 {
+  # claude-code self-updates outside Nix into ~/.local/share/claude/versions,
+  # symlinked from ~/.local/bin/claude; keep it ahead of the Nix-packaged binary.
+  home.sessionPath = [ "$HOME/.local/bin" ];
+
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   programs.zsh = {
     enable = true;
 
     # Aliases
     shellAliases = {
+      # Keep incompatible replacements available under their native names;
+      # their command-line semantics differ from the tools they replace.
       ll = "eza -la --icons --git";
       la = "eza -a --icons";
       lt = "eza --tree --icons --level=2";
-      cat = "bat";
+      mux = "zellij";
       k = "kubectl";
       kns = "kubectl config set-context --current --namespace";
       dc = "docker compose";
@@ -31,6 +42,10 @@ _:
     };
 
     initContent = ''
+      # Preserve standard utility behavior for interactive users and agents.
+      # NixOS/oh-my-zsh adds aliases for these names at the system layer.
+      unalias ls grep egrep fgrep 2>/dev/null || true
+
       # Load completions
       autoload -Uz compinit && compinit
     '';

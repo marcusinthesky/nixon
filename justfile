@@ -1,7 +1,10 @@
-# nixify — common tasks
+# nixon — common tasks
 #
 # Usage: just <recipe>
 # Requires: https://github.com/casey/just
+
+cosmic_substituter := "https://cosmic.cachix.org/"
+cosmic_public_key := "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
 
 # Default recipe — show available commands
 default:
@@ -11,21 +14,25 @@ default:
 
 # Build and switch to the new configuration
 switch:
-    sudo nixos-rebuild switch --flake .#nixos
+    sudo nixos-rebuild switch --flake .#nixos --use-substitutes --no-write-lock-file --option extra-substituters '{{ cosmic_substituter }}' --option extra-trusted-public-keys '{{ cosmic_public_key }}'
 
 # Build without switching (dry run)
 build:
-    nixos-rebuild build --flake .#nixos
+    nixos-rebuild build --flake .#nixos --no-write-lock-file
 
 # Test the configuration (activate without adding to bootloader)
 test:
-    sudo nixos-rebuild test --flake .#nixos
+    sudo nixos-rebuild test --flake .#nixos --use-substitutes --no-write-lock-file
 
 # ── Quality Gates ──────────────────────────────────────────────────────
 
-# Run ALL pre-commit hooks on every file
+# Run all prek hooks on every file
 lint:
-    nix develop -c pre-commit run --all-files
+    nix develop -c prek run --all-files
+
+# Install prek's Git hooks for this repository
+install-hooks:
+    nix develop -c prek install
 
 # Format all Nix files
 fmt:
@@ -43,19 +50,23 @@ deadnix:
 vulnix:
     nix develop -c vulnix --system
 
-# Run nix flake check (sandboxed — used in CI)
+# Run Nix evaluation and the prek quality check
 check:
     nix flake check
 
 # ── Flake Management ──────────────────────────────────────────────────
 
-# Update all flake inputs (nixpkgs, home-manager, git-hooks)
+# Update the primary stable channel only. Use `just update-all` deliberately.
 update:
-    nix flake update
+    nix flake lock --update-input nixpkgs
 
 # Update a single input
 update-input input:
-    nix flake update {{input}}
+    nix flake lock --update-input {{ input }}
+
+# Update every input, including unstable and project-local tool integrations.
+update-all:
+    nix flake update
 
 # Show the flake outputs
 show:
@@ -70,6 +81,10 @@ dev:
 # Garbage collect old generations
 gc:
     sudo nix-collect-garbage -d
+
+# Run store deduplication manually when disk usage warrants the extra work.
+optimise:
+    sudo nix-store --optimise
 
 # List system generations
 generations:

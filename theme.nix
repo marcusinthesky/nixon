@@ -1,7 +1,7 @@
 # theme.nix — single source of truth for the visual identity
 #
 # Every theming decision lives here. Both the NixOS-level Stylix
-# module and the Home Manager GNOME config import this file so
+# module and the Home Manager COSMIC config import this file so
 # nothing is duplicated.
 #
 # To switch look-and-feel, edit ONLY this file and run:

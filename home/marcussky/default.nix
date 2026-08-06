@@ -13,12 +13,14 @@ _:
     ./git.nix
     ./shell.nix
     ./direnv.nix
-    ./btop.nix
     ./vscode.nix
-    ./packages.nix
-    ./gnome.nix
-    ./zed.nix
+    ./packages
+    ./cosmic.nix
   ];
+
+  # COSMIC creates these GTK CSS symlinks itself; do not let Stylix's
+  # Home Manager target try to replace them.
+  stylix.targets.gtk.enable = false;
 
   home.stateVersion = "25.11";
 }

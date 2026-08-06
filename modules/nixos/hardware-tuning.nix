@@ -35,9 +35,19 @@
 
     loader.systemd-boot.configurationLimit = 10;
 
-    # Only swap to disk under real pressure — zram absorbs the rest.
+    # /tmp lives on the root filesystem, so nothing reclaims it on its own.
+    # Agent and build scratch (uv, prek, matplotlib, nix-shell) accumulates
+    # there indefinitely — it had reached 18 GB before this was set.
+    #
+    # NOT useTmpfs: that backs /tmp with RAM, and single builds here have
+    # written multi-GB caches to it. On 16 GB that trades a disk problem
+    # for an OOM.
+    tmp.cleanOnBoot = true;
+
+    # Treat compressed zram as a normal reclaim target. Its higher swap
+    # priority keeps the encrypted NVMe swap as a last-resort fallback.
     kernel.sysctl = {
-      "vm.swappiness" = 10;
+      "vm.swappiness" = 100;
       "vm.vfs_cache_pressure" = 50;
       "vm.dirty_ratio" = 10;
       "vm.dirty_background_ratio" = 5;
@@ -55,8 +65,8 @@
   services = {
     thermald.enable = true;
 
-    # power-profiles-daemon owns the cpufreq governor; let GNOME pick
-    # `performance` on AC and `power-saver` on battery.
+    # power-profiles-daemon owns the cpufreq governor and exposes
+    # `performance` on AC and `power-saver` on battery to the desktop.
     power-profiles-daemon.enable = true;
 
     # NVMe scheduler = `none` — the device has its own queue depth;

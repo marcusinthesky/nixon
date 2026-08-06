@@ -1,16 +1,11 @@
 {
-  description = "nixify — declarative NixOS workstation configuration";
+  description = "nixon — declarative NixOS workstation configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    git-hooks = {
-      url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -24,13 +19,37 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Bleeding-edge channel — used selectively (e.g. VS Code)
+    cosmic-manager = {
+      url = "github:HeitorAugustoLN/cosmic-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
+    # Project-local toolchain integrations. These remain available for real
+    # manifests under tools/ and are kept in the root lockfile.
+    uv2nix = {
+      url = "github:pyproject-nix/uv2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pyproject-nix.inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    cargo2nix = {
+      url = "github:cargo2nix/cargo2nix/release-0.12";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    bun2nix = {
+      url = "github:nix-community/bun2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Bleeding-edge channel — used selectively (COSMIC, VS Code, agent CLIs)
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    zed-extensions.url = "github:DuskSystems/nix-zed-extensions";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, git-hooks, vulnix, stylix, zed-extensions, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, vulnix, stylix, cosmic-manager, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -38,6 +57,7 @@
         inherit system;
         config.allowUnfree = true;
       };
+      toolPackages = import ./nix/tools.nix { inherit pkgs; };
     in
     {
       # ════════════════════════════════════════════════════════════════
@@ -52,20 +72,22 @@
         specialArgs = {
           userName = "marcussky";
           userDescription = "Marcus Gawronsky";
+          inherit pkgs-unstable;
         };
 
         modules = [
-          # ── Zed extensions overlay ────────────────────────────────────
-          { nixpkgs.overlays = [ zed-extensions.overlays.default ]; }
-
           # ── Host-specific (boot, LUKS, hardware) ───────────────────
           ./hosts/nixos
+
+          # ── COSMIC desktop ────────────────────────────────────────
+          ./modules/nixos/cosmic-unstable.nix
 
           # ── Shared NixOS modules ───────────────────────────────────
           ./modules/nixos/nix-settings.nix
           ./modules/nixos/hardware-tuning.nix
           ./modules/nixos/desktop.nix
           ./modules/nixos/networking.nix
+          ./modules/nixos/security.nix
           ./modules/nixos/docker.nix
           ./modules/nixos/shell.nix
           ./modules/nixos/stylix.nix
@@ -81,11 +103,11 @@
               useUserPackages = true;
               backupFileExtension = "hm-backup";
               sharedModules = [
-                zed-extensions.homeManagerModules.default
+                cosmic-manager.homeManagerModules.cosmic-manager
               ];
               extraSpecialArgs = {
                 userName = "marcussky";
-                inherit pkgs-unstable;
+                inherit pkgs-unstable toolPackages;
               };
               users.marcussky = import ./home/marcussky;
             };
@@ -94,54 +116,56 @@
       };
 
       # ════════════════════════════════════════════════════════════════
-      # Quality gates — pre-commit hooks (Nix-managed, self-contained)
+      # Quality gates — standalone prek (Rust pre-commit replacement)
       # ════════════════════════════════════════════════════════════════
-      # All tooling is pinned via the flake lock — no system installs
-      # needed. Hooks install automatically when entering `nix develop`.
-      # Run manually: nix develop -c pre-commit run --all-files
-      # Run in CI:    nix flake check (sandboxed, read-only)
-      checks.${system} = {
-        pre-commit-check = git-hooks.lib.${system}.run {
-          src = ./.;
-          hooks = {
-            # ── Nix formatting ─────────────────────────────────────────
-            nixpkgs-fmt.enable = true;
-
-            # ── Nix linting ────────────────────────────────────────────
-            statix.enable = true;
-
-            # ── Nix dead code detection ────────────────────────────────
-            deadnix.enable = true;
-
-            # ── General hygiene ────────────────────────────────────────
-            check-merge-conflicts.enable = true;
-            check-added-large-files.enable = true;
-            detect-private-keys.enable = true;
-            end-of-file-fixer.enable = true;
-            trim-trailing-whitespace.enable = true;
-
-            # ── Commit messages ────────────────────────────────────────
-            # Enforce conventional commits (feat:, fix:, chore:, etc.)
-            convco.enable = true;
-          };
-        };
-      };
+      # Run manually: `prek run --all-files`
+      # Install Git hooks: `prek install`
+      checks.${system}.prek = pkgs.runCommand "nixon-prek-check"
+        {
+          nativeBuildInputs = [
+            pkgs.prek
+            pkgs.nixpkgs-fmt
+            pkgs.statix
+            pkgs.deadnix
+            pkgs.convco
+            pkgs.git
+            pkgs.rumdl
+            pkgs.codespell
+            pkgs.tombi
+            pkgs.just
+            pkgs.just-lsp
+          ];
+        } ''
+        cp -R ${./.} source
+        chmod -R u+w source
+        export XDG_CACHE_HOME="$TMPDIR/prek-cache"
+        mkdir -p "$XDG_CACHE_HOME"
+        cd source
+        git init -q
+        git config user.email "nixon@localhost"
+        git config user.name "nixon"
+        git add -A
+        prek run --all-files
+        touch $out
+      '';
 
       # ════════════════════════════════════════════════════════════════
       # Development shell — hooks auto-install on entry
       # ════════════════════════════════════════════════════════════════
       devShells.${system}.default =
-        let
-          inherit (self.checks.${system}.pre-commit-check) shellHook enabledPackages;
-        in
         pkgs.mkShell {
-          name = "nixify-dev";
-          inherit shellHook;
-          buildInputs = enabledPackages ++ [
+          name = "nixon-dev";
+          buildInputs = [
+            pkgs.prek
             pkgs.just
             pkgs.nixpkgs-fmt
             pkgs.statix
             pkgs.deadnix
+            pkgs.convco
+            pkgs.rumdl
+            pkgs.codespell
+            pkgs.tombi
+            pkgs.just-lsp
             vulnix.packages.${system}.default
           ];
         };
