@@ -1,4 +1,4 @@
-# Host: nixos — Marcus's personal workstation
+# Host: nixos — Dell XPS 13 7390, Marcus's laptop
 #
 # Machine-specific configuration: boot, LUKS encryption, hostname,
 # and hardware. Everything else is in shared modules.
@@ -7,6 +7,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/nixos/hardware/xps13.nix
   ];
 
   # --------------------------------------------------------------------------

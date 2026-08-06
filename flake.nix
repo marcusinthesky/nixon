@@ -25,6 +25,14 @@
       inputs.home-manager.follows = "home-manager";
     };
 
+    # Declarative disk layout. Makes partitioning, LUKS, and formatting part
+    # of the configuration rather than a sequence of commands typed once and
+    # then forgotten.
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Project-local toolchain integrations. These remain available for real
     # manifests under tools/ and are kept in the root lockfile.
     uv2nix = {
@@ -49,7 +57,7 @@
 
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, vulnix, stylix, cosmic-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, vulnix, stylix, cosmic-manager, disko, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -58,62 +66,97 @@
         config.allowUnfree = true;
       };
       toolPackages = import ./nix/tools.nix { inherit pkgs; };
+
+      userName = "marcussky";
+      userDescription = "Marcus Gawronsky";
+
+      # ── sharedModules ───────────────────────────────────────────────
+      # Everything that is true of "a nixon machine" regardless of which
+      # machine. Both real hosts and the installer image are built from
+      # this list, which is what makes the live ISO a working workstation
+      # rather than a stripped-down rescue environment.
+      sharedModules = [
+        # ── COSMIC desktop ────────────────────────────────────────
+        ./modules/nixos/cosmic-unstable.nix
+
+        # ── Shared NixOS modules ───────────────────────────────────
+        ./modules/nixos/nix-settings.nix
+        ./modules/nixos/hardware/common.nix
+        ./modules/nixos/desktop.nix
+        ./modules/nixos/networking.nix
+        ./modules/nixos/security.nix
+        ./modules/nixos/docker.nix
+        ./modules/nixos/shell.nix
+        ./modules/nixos/stylix.nix
+
+        # ── Theming (Stylix) ────────────────────────────────────────
+        stylix.nixosModules.stylix
+
+        # ── Home Manager as NixOS module ───────────────────────────
+        home-manager.nixosModules.home-manager
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            backupFileExtension = "hm-backup";
+            sharedModules = [
+              cosmic-manager.homeManagerModules.cosmic-manager
+            ];
+            extraSpecialArgs = {
+              inherit userName pkgs-unstable toolPackages;
+            };
+            users.${userName} = import ./home/marcussky;
+          };
+        }
+      ];
+
+      # ── mkSystem ────────────────────────────────────────────────────
+      # specialArgs is passed to every NixOS module (including Home
+      # Manager). `self` is here so the installer image can bundle this
+      # flake's source onto the ISO.
+      mkSystem = modules: nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = {
+          inherit self userName userDescription pkgs-unstable;
+        };
+        modules = sharedModules ++ modules;
+      };
+
+      # ── mkHost ──────────────────────────────────────────────────────
+      # One workstation profile, several machines. The host directory owns
+      # boot, disks, identity, and its platform tuning module. Add a host
+      # by creating hosts/<name>/ and adding one line below.
+      mkHost = hostPath: mkSystem [
+        disko.nixosModules.disko
+        hostPath
+      ];
     in
     {
       # ════════════════════════════════════════════════════════════════
-      # NixOS system configuration
+      # NixOS system configurations
       # ════════════════════════════════════════════════════════════════
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        inherit system;
+      nixosConfigurations = {
+        # Dell XPS 13 7390 — Intel Ice Lake laptop
+        nixos = mkHost ./hosts/nixos;
 
-        # ── specialArgs ────────────────────────────────────────────────
-        # Passed to every NixOS module (including Home Manager).
-        # Add new hosts by duplicating this block with different args.
-        specialArgs = {
-          userName = "marcussky";
-          userDescription = "Marcus Gawronsky";
-          inherit pkgs-unstable;
-        };
+        # AM5 desktop — Ryzen 5 9600X + RTX 5060 Ti, driven over SSH
+        workstation = mkHost ./hosts/workstation;
 
-        modules = [
-          # ── Host-specific (boot, LUKS, hardware) ───────────────────
-          ./hosts/nixos
-
-          # ── COSMIC desktop ────────────────────────────────────────
-          ./modules/nixos/cosmic-unstable.nix
-
-          # ── Shared NixOS modules ───────────────────────────────────
-          ./modules/nixos/nix-settings.nix
-          ./modules/nixos/hardware-tuning.nix
-          ./modules/nixos/desktop.nix
-          ./modules/nixos/networking.nix
-          ./modules/nixos/security.nix
-          ./modules/nixos/docker.nix
-          ./modules/nixos/shell.nix
-          ./modules/nixos/stylix.nix
-
-          # ── Theming (Stylix) ────────────────────────────────────────
-          stylix.nixosModules.stylix
-
-          # ── Home Manager as NixOS module ───────────────────────────
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              backupFileExtension = "hm-backup";
-              sharedModules = [
-                cosmic-manager.homeManagerModules.cosmic-manager
-              ];
-              extraSpecialArgs = {
-                userName = "marcussky";
-                inherit pkgs-unstable toolPackages;
-              };
-              users.marcussky = import ./home/marcussky;
-            };
-          }
+        # Live installer image — the workstation profile itself, plus the
+        # ISO machinery. Not a mkHost: it deliberately omits hosts/
+        # workstation, because the disk layout and bootloader belong to the
+        # machine being installed, not to the stick doing the installing.
+        installer = mkSystem [
+          ./modules/nixos/hardware/workstation.nix
+          ./hosts/installer
         ];
       };
+
+      # ════════════════════════════════════════════════════════════════
+      # Installer ISO — `just iso`, then `just flash`
+      # ════════════════════════════════════════════════════════════════
+      packages.${system}.installer-iso =
+        self.nixosConfigurations.installer.config.system.build.isoImage;
 
       # ════════════════════════════════════════════════════════════════
       # Quality gates — standalone prek (Rust pre-commit replacement)
