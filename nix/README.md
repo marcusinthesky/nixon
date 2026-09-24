@@ -14,8 +14,9 @@ This repository has two deliberately separate concerns:
 For a tool used globally on the workstation:
 
 1. Use the stable locked `nixpkgs` package.
-2. Use `nixpkgs-unstable` only when the stable package is missing or unusable;
-   keep that exception explicit in `home/marcussky/packages/`.
+2. If the stable package is missing or too old, it does not belong on the host:
+   put it in the devenv or flake `devShell` of the repository that needs it.
+   There is no unstable channel in this flake.
 3. Do not add a custom derivation merely to install an upstream binary unless
    it has a reproducible source, a security review, and a cache/build policy.
    Such derivations belong in `nix/packages/`, not in a Home Manager module.

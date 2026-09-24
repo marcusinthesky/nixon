@@ -47,7 +47,7 @@ nixon/
         ├── ghostty.nix                # Ghostty terminal config
         ├── cosmic.nix                 # Declarative COSMIC user configuration
         ├── git.nix                    # Git identity, delta, aliases, gh CLI
-        ├── packages/                  # Core, development, agents, and opt-in profiles
+        ├── packages/                  # Core CLI, devenv bootstrap, Zed + agents, opt-in profiles
         │   ├── default.nix
         │   ├── core.nix
         │   ├── development.nix
@@ -56,8 +56,7 @@ nixon/
         │   ├── media.nix
         │   └── diagnostics.nix
         ├── shell.nix                  # User zsh aliases, session vars
-        ├── starship.nix               # Shell prompt (k8s, git, nix-shell)
-        └── vscode.nix                 # VS Code + declarative extensions
+        └── starship.nix               # Shell prompt (k8s, git, nix-shell)
 ```
 
 ## Quick Start

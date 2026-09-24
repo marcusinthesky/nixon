@@ -51,20 +51,12 @@
       url = "github:nix-community/bun2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Bleeding-edge channel — used selectively (COSMIC, VS Code, agent CLIs)
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, vulnix, stylix, cosmic-manager, disko, ... }:
+  outputs = { self, nixpkgs, home-manager, vulnix, stylix, cosmic-manager, disko, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      pkgs-unstable = import nixpkgs-unstable {
-        inherit system;
-        config.allowUnfree = true;
-      };
       toolPackages = import ./nix/tools.nix { inherit pkgs; };
 
       userName = "marcussky";
@@ -75,10 +67,11 @@
       # machine. Both real hosts and the installer image are built from
       # this list, which is what makes the live ISO a working workstation
       # rather than a stripped-down rescue environment.
+      #
+      # Every package comes from the one locked stable nixpkgs. A second
+      # channel means a second glibc, mesa, systemd, and llvm on every host,
+      # and a switch that downloads both whenever either moves.
       sharedModules = [
-        # ── COSMIC desktop ────────────────────────────────────────
-        ./modules/nixos/cosmic-unstable.nix
-
         # ── Shared NixOS modules ───────────────────────────────────
         ./modules/nixos/nix-settings.nix
         ./modules/nixos/hardware/common.nix
@@ -103,7 +96,7 @@
               cosmic-manager.homeManagerModules.cosmic-manager
             ];
             extraSpecialArgs = {
-              inherit userName pkgs-unstable toolPackages;
+              inherit userName toolPackages;
             };
             users.${userName} = import ./home/marcussky;
           };
@@ -117,7 +110,7 @@
       mkSystem = modules: nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit self userName userDescription pkgs-unstable;
+          inherit self userName userDescription;
         };
         modules = sharedModules ++ modules;
       };
@@ -209,7 +202,12 @@
             pkgs.codespell
             pkgs.tombi
             pkgs.just-lsp
+            pkgs.nixd
             vulnix.packages.${system}.default
+
+            # `just flash` writes the installer ISO. Only needed here, so it
+            # lives in the repository shell rather than on every host.
+            pkgs.popsicle
           ];
         };
 

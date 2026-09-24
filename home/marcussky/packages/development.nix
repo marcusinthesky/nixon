@@ -1,64 +1,27 @@
-# Language toolchains, formatters, and language servers.
+# Development bootstrap — deliberately almost empty.
+#
+# Language toolchains, language servers, formatters, and linters belong to
+# the repository that uses them: its devenv.nix (preferred) or flake.nix
+# devShell, entered automatically by direnv. That is what pins a project's
+# tools in its own lockfile rather than in whatever this host last switched
+# to — and what keeps them off a laptop that is not working on that project.
+#
+# The host carries only what it takes to enter those environments, plus the
+# two runtimes wanted for throwaway scripts outside any repository.
 { pkgs, ... }:
 
 {
   home.packages = with pkgs; [
-    # Structured configuration
-    yaml-language-server
-    tombi
+    # Project environments — `devenv init`, then `use devenv` in .envrc.
+    devenv
 
-    # Go
-    go
-    gopls
-    delve
-
-    # Rust
-    cargo
-    rustc
-    clippy
-    rustfmt
-
-    # Python
+    # Ad hoc scripting outside a repository.
+    python3
     uv
-    ty
-    ruff
-
-    # JavaScript / TypeScript
     bun
-    deno
-    typescript-language-server
 
-    # Lean
-    elan
-
-    # Nix
-    nixfmt
-    nixpkgs-fmt
-    statix
-    deadnix
-    nixd
-    prek
-    convco
-    rumdl
-    codespell
-
-    # Typst, Markdown, Quarto, and LaTeX
-    typst
-    tinymist
-    # Quarto pulls a large R/SDL runtime. Enable it deliberately when needed
-    # for publishing projects; Typst/Tectonic remain available by default.
-    # quarto
-    marksman
-    tectonic
-
-    # Task runner
+    # Task runner. Every repository drives its gates through a justfile, and
+    # it is needed before a shell exists to provide one.
     just
-    just-lsp
-
-    # Native build
-    git-cliff
-    gnumake
-    gcc
-    binutils
   ];
 }

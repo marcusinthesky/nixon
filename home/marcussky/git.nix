@@ -17,7 +17,7 @@ _:
         init.defaultBranch = "main";
         pull.rebase = true;
         push.autoSetupRemote = true;
-        core.editor = "code --wait";
+        core.editor = "zeditor --wait";
         alias = {
           co = "checkout";
           br = "branch";

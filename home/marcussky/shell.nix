@@ -37,7 +37,7 @@ _:
     };
 
     sessionVariables = {
-      EDITOR = "code --wait";
+      EDITOR = "zeditor --wait";
       DOCKER_BUILDKIT = "1";
     };
 

@@ -380,32 +380,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1785491804,
-        "narHash": "sha256-p00vplVOyfKGlhju0+eGGPAxyYYKaY0lpyuoHLFIx2Y=",
+        "lastModified": 1790113641,
+        "narHash": "sha256-D2aaQetafdpHxbwA4ldAxs51UX0b11pXL+JL/5L8VrM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5b4f72e1705a63aace42900610c4db82cb4af0ec",
+        "rev": "1bc55b9def8165e82073919945c3239903fe4dc2",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "ref": "nixos-26.05",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-unstable": {
-      "locked": {
-        "lastModified": 1785571196,
-        "narHash": "sha256-KoTsyMQqnXQZq8deCEnu4QkyldkwH/bpMMhUcfMdGIw=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "148bab9c1c3c53136ecb44a6ea356a0ed5b39b06",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -463,7 +447,6 @@
         "disko": "disko",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-unstable": "nixpkgs-unstable",
         "stylix": "stylix",
         "uv2nix": "uv2nix",
         "vulnix": "vulnix"

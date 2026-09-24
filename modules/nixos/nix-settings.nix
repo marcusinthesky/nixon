@@ -15,10 +15,12 @@ _:
       substituters = [
         "https://cache.nixos.org"
         "https://nix-mirror.freetls.fastly.net" # Fastly CDN — global edge nodes
-        "https://cosmic.cachix.org/"
+        # devenv's own cache. Projects pin github:cachix/devenv-nixpkgs,
+        # which cache.nixos.org does not carry.
+        "https://devenv.cachix.org"
       ];
       trusted-public-keys = [
-        "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
+        "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
       ];
 
       # Build parallelism, download concurrency, and the free-space

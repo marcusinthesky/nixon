@@ -55,10 +55,6 @@
     cosmic-settings
     mission-center
 
-    # USB imaging — writes the installer ISO from `just iso`.
-    # Provides both `popsicle` (CLI, used by `just flash`) and `popsicle-gtk`.
-    popsicle
-
     # Media
     vlc
 

@@ -3,9 +3,6 @@
 # Usage: just <recipe>
 # Requires: https://github.com/casey/just
 
-cosmic_substituter := "https://cosmic.cachix.org/"
-cosmic_public_key := "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
-
 # Which nixosConfiguration to act on. Defaults to this machine's hostname, so
 # `just switch` always means "this box". Override for cross-host work:
 #   just host=workstation build
@@ -19,7 +16,7 @@ default:
 
 # Build and switch to the new configuration
 switch:
-    sudo nixos-rebuild switch --flake .#{{ host }} --use-substitutes --no-write-lock-file --option extra-substituters '{{ cosmic_substituter }}' --option extra-trusted-public-keys '{{ cosmic_public_key }}'
+    sudo nixos-rebuild switch --flake .#{{ host }} --use-substitutes --no-write-lock-file
 
 # Build without switching (dry run)
 build:
@@ -95,7 +92,7 @@ update:
 update-input input:
     nix flake lock --update-input {{ input }}
 
-# Update every input, including unstable and project-local tool integrations.
+# Update every input, including project-local tool integrations.
 update-all:
     nix flake update
 

@@ -106,9 +106,19 @@ and system packages. Home Manager provides the same model for the user
 profile, avoiding a second imperative package-management workflow for shell
 tools and desktop applications.
 
-The lockfile is the source of truth for external inputs. Stable nixpkgs is the
-base channel; the unstable channel is used selectively where a package needs
-it. Local tool integrations such as uv2nix, cargo2nix, and bun2nix remain
+The lockfile is the source of truth for external inputs. Every host package
+comes from the one locked stable nixpkgs: a second channel means a second
+glibc, mesa, and systemd on every machine, and a switch that downloads both.
+Nothing on the host is allowed to miss cache.nixos.org either — Stylix's
+overlay targets are disabled for exactly that reason.
+
+The host carries only what it takes to enter a project environment: devenv,
+direnv, git, just, and Python/Bun for ad hoc scripts, alongside everyday CLI
+utilities and the desktop. Language toolchains, language servers, and linters
+belong to each repository's `devenv.nix` (preferred) or flake `devShell`,
+where its own lockfile pins them. This repository keeps a flake `devShell`
+rather than devenv because it then shares the system's nixpkgs pin and adds
+no second closure. Local tool integrations such as uv2nix, cargo2nix, and bun2nix remain
 available for real project manifests without forcing unused scaffolding into
 the workstation profile.
 
