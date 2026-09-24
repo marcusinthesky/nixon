@@ -3,6 +3,9 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    # Codex releases frequently; keep the agent CLI current without moving
+    # the workstation's stable package set.
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
@@ -53,10 +56,11 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, vulnix, stylix, cosmic-manager, disko, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, vulnix, stylix, cosmic-manager, disko, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      pkgsUnstable = nixpkgs-unstable.legacyPackages.${system};
       toolPackages = import ./nix/tools.nix { inherit pkgs; };
 
       userName = "marcussky";
@@ -96,7 +100,7 @@
               cosmic-manager.homeManagerModules.cosmic-manager
             ];
             extraSpecialArgs = {
-              inherit userName toolPackages;
+              inherit userName toolPackages pkgsUnstable;
             };
             users.${userName} = import ./home/marcussky;
           };
