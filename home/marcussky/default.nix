@@ -16,6 +16,7 @@ _:
     ./vscode.nix
     ./packages
     ./cosmic.nix
+    ./moshi.nix
   ];
 
   # COSMIC creates these GTK CSS symlinks itself; do not let Stylix's

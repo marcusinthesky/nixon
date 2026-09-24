@@ -29,7 +29,7 @@ nixon/
 │       │   ├── common.nix             # zram, sysctl, storage, journal
 │       │   ├── workstation.nix        # AMD pstate, NVIDIA open, no-suspend
 │       │   └── xps13.nix              # zen kernel, thermald, Intel VA-API
-│       ├── networking.nix             # OpenSSH, Tailscale, firewall
+│       ├── networking.nix             # OpenSSH, Mosh, Tailscale, firewall
 │       ├── nix-settings.nix           # Flakes, substituters, GC
 │       └── shell.nix                  # System zsh (oh-my-zsh, plugins, nix-ld)
 ├── nix/
@@ -47,6 +47,7 @@ nixon/
         ├── ghostty.nix                # Ghostty terminal config
         ├── cosmic.nix                 # Declarative COSMIC user configuration
         ├── git.nix                    # Git identity, delta, aliases, gh CLI
+        ├── moshi.nix                  # Moshi hook daemon (phone → local agents)
         ├── packages/                  # Core, development, agents, and opt-in profiles
         │   ├── default.nix
         │   ├── core.nix

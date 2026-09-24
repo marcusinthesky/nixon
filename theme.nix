@@ -52,6 +52,18 @@
     terminal = 0.95;
   };
 
+  # ── Case lighting ──────────────────────────────────────────────────────
+  # Hex (no #) driven onto every RGB zone OpenRGB can reach, on the hosts
+  # that have any. Only the workstation does — see
+  # modules/nixos/hardware/workstation.nix.
+  #
+  # This is deliberately more saturated and further from yellow than a
+  # "sunset orange" swatch looks on screen. Diffused LEDs run hot on the
+  # green channel, so a picker-accurate ff8c42 lands somewhere near amber
+  # in an actual fan hub. Raise the middle byte toward 6a if it reads too
+  # red on yours, lower it toward 30 if it reads yellow.
+  rgb = "ff4a00";
+
   # ── Wallpaper ──────────────────────────────────────────────────────────
   # Set to a path (e.g. ./wallpaper.png) to use a real image.
   # null = generate a solid-colour placeholder from the scheme.
