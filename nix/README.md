@@ -14,9 +14,10 @@ This repository has two deliberately separate concerns:
 For a tool used globally on the workstation:
 
 1. Use the stable locked `nixpkgs` package.
-2. If the stable package is missing or too old, it does not belong on the host:
-   put it in the devenv or flake `devShell` of the repository that needs it.
-   There is no unstable channel in this flake.
+2. If the stable package is missing or too old, put it in the devenv or flake
+   `devShell` of the repository that needs it. A small number of fast-moving
+   host tools may use the locked `nixpkgs-unstable` input when they are needed
+   globally and benefit from current releases.
 3. Do not add a custom derivation merely to install an upstream binary unless
    it has a reproducible source, a security review, and a cache/build policy.
    Such derivations belong in `nix/packages/`, not in a Home Manager module.

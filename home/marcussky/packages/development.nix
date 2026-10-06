@@ -8,7 +8,7 @@
 #
 # The host carries only what it takes to enter those environments, plus the
 # two runtimes wanted for throwaway scripts outside any repository.
-{ pkgs, ... }:
+{ pkgs, pkgsUnstable, ... }:
 
 {
   home.packages = with pkgs; [
@@ -18,10 +18,12 @@
     # Ad hoc scripting outside a repository.
     python3
     uv
-    bun
 
     # Task runner. Every repository drives its gates through a justfile, and
     # it is needed before a shell exists to provide one.
     just
+  ] ++ [
+    # Bun moves quickly; use the locked unstable input to keep the host runtime current.
+    pkgsUnstable.bun
   ];
 }

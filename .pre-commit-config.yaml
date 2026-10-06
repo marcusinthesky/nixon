@@ -36,7 +36,7 @@ repos:
         files: \.nix$
       - id: tombi
         name: tombi (TOML lint)
-        entry: tombi lint
+        entry: tombi lint --offline
         language: system
         files: \.toml$
       - id: rumdl
