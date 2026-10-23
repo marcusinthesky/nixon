@@ -2,6 +2,14 @@
 { pkgs, ... }:
 
 {
+  environment.systemPackages = with pkgs; [
+    kdePackages.kdenlive
+    audacity
+    onlyoffice-desktopeditors
+  ];
+
+  programs.obs-studio.enable = true;
+
   services = {
     # ── Display & Desktop ──────────────────────────────────────────────
     displayManager.cosmic-greeter.enable = true;
