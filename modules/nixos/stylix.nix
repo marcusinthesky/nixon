@@ -64,9 +64,22 @@ in
     # ── Opacity ────────────────────────────────────────────────────────
     inherit (theme) opacity;
 
-    # ── Qt ─────────────────────────────────────────────────────────────
-    # COSMIC uses its own Iced/RON theme and settings system; keep Stylix's
-    # Qt target disabled and let cosmic-manager handle COSMIC user state.
-    targets.qt.enable = false;
+    targets = {
+      # ── Qt ─────────────────────────────────────────────────────────
+      # COSMIC uses its own Iced/RON theme and settings system; keep
+      # Stylix's Qt target disabled and let cosmic-manager handle COSMIC
+      # user state.
+      qt.enable = false;
+
+      # ── Overlay targets: off ───────────────────────────────────────
+      # These two theme by *overlaying nixpkgs*, not by writing config. A
+      # restyled gtksourceview changes the hash of everything built on it
+      # — inkscape → pop-gtk-theme → cosmic-settings-daemon — so none of
+      # it matches cache.nixos.org and a switch compiles Rust and clang
+      # from source. The payoff (tinted source views, a recoloured NixOS
+      # logo) is not worth a laptop-sized build.
+      gtksourceview.enable = false;
+      nixos-icons.enable = false;
+    };
   };
 }
